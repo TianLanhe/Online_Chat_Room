@@ -13,9 +13,6 @@ public:
 	virtual Status WaitFor() = 0;	
 
 	virtual Status GetExitCode(int*) = 0;
-
-private:
-	int m_exitCode;
 };
 
 #endif

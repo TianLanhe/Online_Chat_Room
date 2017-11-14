@@ -3,17 +3,27 @@
 
 #include <vector>
 #include <string>
-#include "../DataStructure.hpp"
 
 class Process;
 
+enum TYPE{
+    EXEC,
+    INHERIT
+};
+
 class ProcessBuilder{
 public:
-	ProcessBuilder(int (*func)(void*));
-	ProcessBuilder(const std::vector<std::string>&);
-	template<typename T,typename... Args>ProcessBuilder(T first,Args... args);
+        explicit ProcessBuilder(int (*func)(void*),void *arg = nullptr):m_forkType(INHERIT),m_func(func),m_arg(arg){}
+        explicit ProcessBuilder(const std::vector<std::string>&):m_forkType(EXEC),m_func(nullptr),m_com(com),m_arg(nullptr){}
+        explicit ProcessBuilder(const std::string&):m_forkType(EXEC),m_func(nullptr),m_arg(nullptr){
+            m_com = _splitCommand(str);
+        }
+        template<typename... Args>
+        ProcessBuilder(const std::string& first,Args... args):m_forkType(EXEC),m_func(nullptr),m_arg(nullptr){
+            _praseArgs(first,args...);
+        }
 
-	Process* Start();
+        Process* Create();
 
 	std::vector<std::string> GetCommand() const{
 		return m_com;
@@ -21,25 +31,24 @@ public:
 
 	void SetCommand(const std::vector<std::string>& com){
 		m_com = com;
-	}
+        }
 
-	std::string GetDirectory() const{
-		return m_dir;
-	}
-
-	void SetDirectory(const std::string& dir){
-		m_dir = dir;
-	}
+        void SetArg(void* arg){ m_arg = arg; }
+        void* GetArg(){ return m_arg; }
 
 private:
 
-	template<typename T,typename... Args>void _praseArgs(T,Args...);
-	template<typename T>void _parseArgs(T);
+        template<typename... Args>void _parseArgs(const std::string&,Args...);
+        void _parseArgs(const std::string& arg){
+            m_com.push_back(arg);
+        }
+
+        std::vector<std::string> _splitCommand(const std::string&);
 
 	int m_forkType;
-	int (*m_func)(void*);
-	std::string m_dir;
-	std::vector<std::string> m_com;	
+        int (*m_func)(void*);
+        std::vector<std::string> m_com;
+        void* m_arg;
 };
 
 #endif
