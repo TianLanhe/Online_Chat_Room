@@ -8,13 +8,13 @@
 
 class ProcessImpl : public Process{
 public:
-        explicit ProcessImpl(const std::string&);
         explicit ProcessImpl(const std::vector<std::string>&);
         explicit ProcessImpl(int (*)(void*),void* arg = NULL);
         ~ProcessImpl();
 
 	Status Start();
         Status Terminate();
+        bool isTerminate(){ return _hasTerminate(); }
 
 	Status GetExitCode(int*);
 
@@ -22,7 +22,6 @@ public:
 
 private:
         bool _hasTerminate();
-        std::vector<std::string> _splitCommand(const std::string&);
 
 	bool m_bTerminate;
         bool m_bHasWait;

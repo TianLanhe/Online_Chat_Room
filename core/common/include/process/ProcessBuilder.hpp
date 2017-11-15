@@ -14,8 +14,8 @@ enum TYPE{
 class ProcessBuilder{
 public:
         explicit ProcessBuilder(int (*func)(void*),void *arg = nullptr):m_forkType(INHERIT),m_func(func),m_arg(arg){}
-        explicit ProcessBuilder(const std::vector<std::string>&):m_forkType(EXEC),m_func(nullptr),m_com(com),m_arg(nullptr){ }
-        explicit ProcessBuilder(const std::string&):m_forkType(EXEC),m_func(nullptr),m_arg(nullptr){ m_com = _splitCommand(str); }
+        explicit ProcessBuilder(const std::vector<std::string>& com):m_forkType(EXEC),m_func(nullptr),m_com(com),m_arg(nullptr){ }
+        explicit ProcessBuilder(const std::string& str):m_forkType(EXEC),m_func(nullptr),m_arg(nullptr){ m_com = _splitCommand(str); }
         template<typename... Args>
         ProcessBuilder(const std::string& first,Args... args):m_forkType(EXEC),m_func(nullptr),m_arg(nullptr){ _praseArgs(first,args...); }
 

@@ -1,6 +1,8 @@
 #include "../include/process/ProcessBuilder.hpp"
 #include "ProcessImpl.hpp"
 
+using namespace std;
+
 Process* ProcessBuilder::Create(){
     switch (m_forkType) {
     case EXEC:
@@ -30,7 +32,12 @@ vector<string> ProcessBuilder::_splitCommand(const string& str){
     string::size_type end;
     while(start != string::npos){
         end = str.find_first_of(" \t\n",start);
-        vec.push_back(string(str.begin()+start,str.begin()+end));
+        if(end == string::npos){
+            vec.push_back(string(str.begin()+start,str.end()));
+            break;
+        }else{
+            vec.push_back(string(str.begin()+start,str.begin()+end));
+        }
         start = str.find_first_not_of(" \t\n",end);
     }
     return vec;
