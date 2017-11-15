@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <cstring>
-
+#include <iostream>
 using namespace std;
 
 bool ProcessImpl::_hasDestroy(){
@@ -45,10 +45,7 @@ Status ProcessImpl::Start(){
             argvs[m_com.size()] = NULL;
 
             if(execvp(argvs[0],argvs) != 0){
-                m_pid = 0;
-                m_bDestroy = true;
-                m_exitCode = 1;
-                return ERROR;
+                exit(1);
             }
         }
     }
