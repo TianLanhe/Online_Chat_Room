@@ -13,18 +13,17 @@ public:
         ~ProcessImpl();
 
 	Status Start();
-        Status Terminate();
-        bool isTerminate(){ return _hasTerminate(); }
+        Status Destroy();
+        bool isDestroy(){ return _hasDestroy(); }
 
 	Status GetExitCode(int*);
 
 	Status WaitFor();
 
 private:
-        bool _hasTerminate();
+        bool _hasDestroy();
 
-	bool m_bTerminate;
-        bool m_bHasWait;
+        bool m_bDestroy;
         int m_exitCode;
 	pid_t m_pid;
 

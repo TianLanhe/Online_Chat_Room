@@ -1,31 +1,31 @@
 #include "ProcessImpl.hpp"
 #include <signal.h>
 #include <errno.h>
+#include <sys/wait.h>
 #include <cstring>
 
 using namespace std;
 
-bool ProcessImpl::_hasTerminate(){
-    if(!m_bTerminate && m_pid && kill(m_pid,0) == -1 && errno == ESRCH)
-        m_bTerminate = true;
-    return m_bTerminate;
+bool ProcessImpl::_hasDestroy(){
+    if(!m_bDestroy && m_pid && kill(m_pid,0) == -1 && errno == ESRCH)
+        m_bDestroy = true;
+    return m_bDestroy;
 }
 
-ProcessImpl::ProcessImpl(const std::vector<std::string>& com):m_bHasWait(false),m_bTerminate(false),m_pid(0),m_exitCode(0),
+ProcessImpl::ProcessImpl(const std::vector<std::string>& com):m_bDestroy(false),m_pid(0),m_exitCode(0),
     m_func(NULL),m_arg(NULL){
     m_com = com;
 }
 
-ProcessImpl::ProcessImpl(int (*func)(void*),void* arg):m_func(func),m_arg(arg),m_bHasWait(false),m_bTerminate(false),m_pid(0),m_exitCode(0){
+ProcessImpl::ProcessImpl(int (*func)(void*),void* arg):m_func(func),m_arg(arg),
+    m_bDestroy(false),
+    m_pid(0),m_exitCode(0){
 
 }
 
 ProcessImpl::~ProcessImpl(){
     if(m_pid){
-        if(!_hasTerminate())
-            Terminate();
-        if(!m_bHasWait)
-            WaitFor();
+        Destroy();
     }
 }
 
@@ -35,8 +35,7 @@ Status ProcessImpl::Start(){
     m_pid = fork();
     if(!m_pid){
         if(m_func){
-            m_func(m_arg);
-            exit(0);
+            exit(m_func(m_arg));
         }else{
             char **argvs = new char*[m_com.size()+1];
             for(vector<string>::size_type i=0;i<m_com.size();++i){
@@ -45,42 +44,42 @@ Status ProcessImpl::Start(){
             }
             argvs[m_com.size()] = NULL;
 
-            execvp(argvs[0],argvs);
+            if(execvp(argvs[0],argvs) != 0){
+                m_pid = 0;
+                m_bDestroy = true;
+                m_exitCode = 1;
+                return ERROR;
+            }
         }
     }
     return OK;
 }
 
-Status ProcessImpl::Terminate(){
-    CHECK_ERROR(m_pid && !_hasTerminate());
+Status ProcessImpl::Destroy(){
+    CHECK_ERROR(m_pid && !_hasDestroy());
     CHECK_ERROR(kill(m_pid,SIGKILL) == 0);
+    CHECK_ERROR(WaitFor());
     return OK;
 }
 
 Status ProcessImpl::GetExitCode(int* retCode){
-    CHECK_ERROR(m_pid && _hasTerminate());
+    CHECK_ERROR(_hasDestroy());
     CHECK_ERROR(retCode);
-
-    BEFORE_CHECK_RESULT();
-    if(!m_bHasWait){
-        CHECK_RESULT(WaitFor());
-        m_bHasWait = true;
-    }
 
     *retCode = m_exitCode;
     return OK;
 }
 
 Status ProcessImpl::WaitFor(){
-    CHECK_ERROR(m_pid && !m_bHasWait);
+    CHECK_ERROR(m_pid && !_hasDestroy());
 
     int status;
     pid_t pid;
     pid = waitpid(m_pid,&status,0);
     CHECK_ERROR(pid == m_pid);
 
-    m_bHasWait = true;
-    m_bTerminate = true;
+    m_bDestroy = true;
+    m_pid = 0;
 
     int ret;
     if(WIFEXITED(status)){

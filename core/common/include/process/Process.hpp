@@ -8,8 +8,8 @@ public:
 	virtual ~Process(){}
 
 	virtual Status Start() = 0;
-        virtual Status Terminate() = 0;
-        virtual bool isTerminate() = 0;
+        virtual Status Destroy() = 0;
+        virtual bool isDestroy() = 0;
 
 	virtual Status WaitFor() = 0;	
 
