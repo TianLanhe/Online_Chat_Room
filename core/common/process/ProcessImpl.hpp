@@ -8,9 +8,9 @@
 
 class ProcessImpl : public Process{
 public:
-	ProcessImpl(const std::string&);
-	ProcessImpl(const std::vector<std::string>&);
-	ProcessImpl(int (*)(void*));
+        explicit ProcessImpl(const std::string&);
+        explicit ProcessImpl(const std::vector<std::string>&);
+        explicit ProcessImpl(int (*)(void*),void* arg = NULL);
         ~ProcessImpl();
 
 	Status Start();
@@ -21,16 +21,22 @@ public:
 	Status WaitFor();
 
 private:
-        void _setCommand();
         bool _hasTerminate();
+        std::vector<std::string> _splitCommand(const std::string&);
 
 	bool m_bTerminate;
         bool m_bHasWait;
+        int m_exitCode;
 	pid_t m_pid;
+
+        int (*m_func)(void*);
+        void *m_arg;
+
+        std::vector<std::string> m_com;
 
 };
 
-Process* GetProcessImpl(int (*)(void*));
+Process* GetProcessImpl(int (*)(void*),void*);
 Process* GetProcessImpl(const std::vector<std::string>&);
 
 #endif

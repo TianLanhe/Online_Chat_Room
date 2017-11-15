@@ -10,7 +10,7 @@ Process* ProcessBuilder::Create(){
     case INHERIT:
         if(m_func == nullptr)
             return nullptr;
-        return GetProcessImpl(m_func);
+        return GetProcessImpl(m_func,m_arg);
     default:
         return nullptr;
     }
