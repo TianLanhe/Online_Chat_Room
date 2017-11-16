@@ -13,8 +13,10 @@ public:
 	Status open();
 	bool isOpen(){ return m_socket != 0; }
 	Status close();
+
 	Status read(int,std::string&);
 	Status write(const char*);
+
 	Status connect(const char*,int);
 	bool hasConnect(){ return m_bHasConnect; }
 
