@@ -35,7 +35,7 @@ Status ProcessImpl::Start(){
     m_pid = fork();
     if(!m_pid){
         if(m_func){
-            exit(m_func(m_arg));
+            _exit(m_func(m_arg));
         }else{
             char **argvs = new char*[m_com.size()+1];
             for(vector<string>::size_type i=0;i<m_com.size();++i){
@@ -45,7 +45,7 @@ Status ProcessImpl::Start(){
             argvs[m_com.size()] = NULL;
 
             if(execvp(argvs[0],argvs) != 0){
-                exit(1);
+                _exit(1);
             }
         }
     }
