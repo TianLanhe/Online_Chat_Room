@@ -105,6 +105,7 @@ Status DefaultServerSocket::bind(int port)
 
 Status DefaultServerSocket::listen(int num)
 {
+        CHECK_ERROR(!m_bIsListen);
 	CHECK_ERROR(::listen(m_socket,num) == 0);	//设置最大监听数并监听
 
 	m_bIsListen = true;
