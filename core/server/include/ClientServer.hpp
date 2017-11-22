@@ -1,12 +1,12 @@
 #ifndef CLIENT_SERVER_HPP
 #define CLIENT_SERVER_HPP
 
-#include "../../common/DataStructureBase.hpp"
+#include "../../common/include/DataStructureBase.hpp"
 
-class ClientServer{
+class ClientServer {
 public:
 	virtual Status UploadFile() = 0;
-	virtual Status DownloadFile() = 0;	
+	virtual Status DownloadFile() = 0;
 
 	virtual Status ReceiveMsg() = 0;
 	virtual Status SendMsg() = 0;

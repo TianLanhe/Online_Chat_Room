@@ -3,42 +3,42 @@
 
 #include "include/ServerApplication.hpp"
 
-class DefaultServerApplication : public ServerApplication{
+class DefaultServerApplication : public ServerApplication {
 
 public:
-    DefaultServerApplication();
-    ~DefaultServerApplication(){}
+	DefaultServerApplication();
+	~DefaultServerApplication() {}
 
-    Status init();
-    Status term();
+	Status init();
+	Status term();
 
-    size_type GetMsgCount(){
-        _updateMsgCount();
-        return m_msgCount;
-    }
+	size_type GetMsgCount() {
+		_updateMsgCount();
+		return m_msgCount;
+	}
 
-    size_type GetFileCount(){
-        _updateFileCount();
-        return m_fileCount;
-    }
+	size_type GetFileCount() {
+		_updateFileCount();
+		return m_fileCount;
+	}
 
-    size_type GetUserCount(){
-        _updateUserCount();
-        return m_fileCount;
-    }
-
-private:
-    void _updateMsgCount();
-    void _updateFileCount();
-    void _updateUserCount();
+	size_type GetUserCount() {
+		_updateUserCount();
+		return m_fileCount;
+	}
 
 private:
-    size_type m_msgCount;
-    size_type m_fileCount;
-    size_type m_userCount;
+	void _updateMsgCount();
+	void _updateFileCount();
+	void _updateUserCount();
 
-    ClientsManager *m_manager;
-    ConfigureReader *m_reader;
+private:
+	size_type m_msgCount;
+	size_type m_fileCount;
+	size_type m_userCount;
+
+	//ClientsManager *m_manager;
+	//ConfigureReader *m_reader;
 
 };
 
