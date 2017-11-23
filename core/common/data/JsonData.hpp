@@ -5,28 +5,41 @@
 #include "../include/json/json.h"
 
 class JsonData : public Data{
+
 public:
-    JsonData(){ }
-    JsonData()
+    JsonData():m_json(m_entity){ }
+    JsonData( int value ):m_json(m_entity),m_entity(value){ }
+    JsonData( double value ):m_json(m_entity),m_entity(value){ }
+    JsonData( const std::string &value ):m_json(m_entity),m_entity(value){ }
+    JsonData( bool value ):m_json(m_entity),m_entity(value){ }
+    JsonData( const JsonData &other ):m_json(m_entity),m_entity(other.m_entity){ }
+    ~JsonData(){ }
+
+    JsonData &operator=( const JsonData &other ){
+        if(this != &other){
+            m_json = other.m_json;
+        }
+        return *this;
+    }
 
 private:
-    JsonData(const Json::Value& json):m_json(json){ }
+    JsonData(Json::Value& json):m_json(json){ }
 
 public:
-    Data* CreateData(){ return new JsonData(); }
+    Data* CreateData() const { return new JsonData(); }
 
-    Status Read(ostream&);
-    Status Write(istream&) const;
+    Status Read(istream&);
+    Status Write(ostream&) const;
 
     Status Read(const std::string&);
     Status Write(const std::string&) const;
 
     Status ReadFromStr(const std::string&);
-    Status WriteToStr(const std::string&) const;
+    Status WriteToStr(std::string&) const;
 
     size_type size() const{ return m_json.size(); }
     bool empty() const{ return m_json.empty(); }
-    void clear(){ return m_json.clear(); }
+    void clear(){ m_json.clear(); }
 
     std::string asString() const{ return m_json.asString(); }
     int asInt() const{ return m_json.asInt(); }
@@ -42,20 +55,19 @@ public:
     bool isArray() const{ return m_json.isArray(); }
     bool isObject() const{ return m_json.isObject(); }
 
-    Data* &operator[]( size_type index ){ return new JsonData(m_json[index]); }
-    const Data* &operator[]( size_type index ) const{ return new JsonData(m_json[index]); }
+    Data* operator[]( size_type index ){ return new JsonData(m_json[index]); }
+    const Data* operator[]( size_type index ) const{ return new JsonData(m_json[index]); }
 
-    Data* &operator[]( const std::string &key ){ return new JsonData(m_json[key]); }
-    const Data* &operator[]( const std::string &key ) const{ return new JsonData(m_json[key]); }
+    Data* operator[]( const std::string &key ){ return new JsonData(m_json[key]); }
+    const Data* operator[]( const std::string &key ) const{ return new JsonData(m_json[key]); }
 
     bool isValidIndex( size_type index ) const{ return m_json.isValidIndex(index); }
 
-    void &append( const Value &value ){ m_json.append(); }
-
     void removeMember( const std::string &key ){ m_json.removeMember(key); }
-    bool isMember( const std::string &key ) const{ m_json.isMember(key); }
+    bool isMember( const std::string &key ) const{ return m_json.isMember(key); }
 
 public:
+    Json::Value m_entity;
     Json::Value& m_json;
 };
 
